@@ -6,7 +6,7 @@
   <title>Генератор доверенности</title>
   <style>
     :root {
-      --bg: #f6f2ea;
+      --bg: #f1eee8;
       --card: #ffffff;
       --text: #222;
       --muted: #666;
@@ -22,7 +22,7 @@
     }
 
     .wrap {
-      max-width: 1100px;
+      max-width: 1180px;
       margin: 0 auto;
       padding: 24px;
       display: grid;
@@ -94,10 +94,10 @@
 
     canvas {
       width: 100%;
-      max-width: 650px;
+      max-width: 760px;
       height: auto;
-      background: white;
-      border: 1px solid #ccc;
+      background: #ddd;
+      border: 1px solid #bbb;
       box-shadow: 0 8px 25px rgba(0,0,0,0.12);
     }
 
@@ -119,7 +119,7 @@
   <div class="wrap">
     <section class="card">
       <h1>Генератор доверенности</h1>
-      <p>Заполни поля, посмотри предпросмотр и скачай PDF с лёгким эффектом скана.</p>
+      <p>Заполни поля и скачай PDF, выглядящий как сфотографированный/отсканированный лист A4 на столе.</p>
 
       <label>ФИО доверителя</label>
       <input id="principalName" value="Иванов Иван Иванович">
@@ -148,7 +148,7 @@
       <label>Для чего выдана доверенность</label>
       <textarea id="purpose">получения, подачи и подписания необходимых документов</textarea>
 
-      <label>Сила эффекта скана</label>
+      <label>Сила эффекта</label>
       <select id="scanStrength">
         <option value="light">Лёгкий</option>
         <option value="medium" selected>Средний</option>
@@ -159,18 +159,21 @@
       <button onclick="renderPreview()" style="background:#777;">Обновить предпросмотр</button>
 
       <div class="note">
-        MVP работает полностью в браузере: данные никуда не отправляются.
+        Всё работает в браузере. Данные не отправляются на сервер.
       </div>
     </section>
 
     <section class="card preview-box">
-      <canvas id="docCanvas" width="1240" height="1754"></canvas>
+      <canvas id="sceneCanvas" width="1500" height="2000"></canvas>
     </section>
   </div>
 
   <script>
-    const canvas = document.getElementById("docCanvas");
-    const ctx = canvas.getContext("2d");
+    const sceneCanvas = document.getElementById("sceneCanvas");
+    const sceneCtx = sceneCanvas.getContext("2d");
+
+    const PAGE_W = 1240;
+    const PAGE_H = 1754;
 
     function todayISO() {
       const d = new Date();
@@ -213,9 +216,7 @@
 
       for (let i = 0; i < words.length; i++) {
         const testLine = line ? line + " " + words[i] : words[i];
-        const metrics = ctx.measureText(testLine);
-
-        if (metrics.width > maxWidth && line) {
+        if (ctx.measureText(testLine).width > maxWidth && line) {
           ctx.fillText(line, x, y);
           line = words[i];
           y += lineHeight;
@@ -232,21 +233,93 @@
       return y;
     }
 
-    function drawNoise(ctx, width, height, strength) {
+    function drawPaperDocument(data) {
+      const pageCanvas = document.createElement("canvas");
+      pageCanvas.width = PAGE_W;
+      pageCanvas.height = PAGE_H;
+      const ctx = pageCanvas.getContext("2d");
+
+      // Paper base
+      ctx.fillStyle = "#f7f7f2";
+      ctx.fillRect(0, 0, PAGE_W, PAGE_H);
+
+      // Slight paper tint
+      const grad = ctx.createLinearGradient(0, 0, PAGE_W, PAGE_H);
+      grad.addColorStop(0, "rgba(255,255,255,0.24)");
+      grad.addColorStop(0.55, "rgba(235,235,225,0.12)");
+      grad.addColorStop(1, "rgba(210,210,200,0.20)");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, PAGE_W, PAGE_H);
+
+      // Very light paper fibres
+      ctx.save();
+      ctx.globalAlpha = 0.05;
+      for (let i = 0; i < 900; i++) {
+        const x = Math.random() * PAGE_W;
+        const y = Math.random() * PAGE_H;
+        const len = 4 + Math.random() * 18;
+        ctx.strokeStyle = Math.random() > 0.5 ? "#777" : "#fff";
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + len, y + Math.random() * 2);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // Text
+      const margin = 115;
+      let y = 135;
+
+      ctx.fillStyle = "#242424";
+      ctx.textBaseline = "top";
+      ctx.font = "bold 42px Georgia, 'Times New Roman', serif";
+      ctx.textAlign = "center";
+      ctx.fillText("ДОВЕРЕННОСТЬ", PAGE_W / 2, y);
+      y += 95;
+
+      ctx.textAlign = "left";
+      ctx.font = "28px Georgia, 'Times New Roman', serif";
+      ctx.fillText(`${data.city}, ${data.docDate}`, margin, y);
+      y += 75;
+
+      const body =
+        `Я, ${data.principalName || "________________________"}, паспорт: ${data.principalPassport || "________________________"}, ` +
+        `зарегистрированный(ая) по адресу: ${data.principalAddress || "________________________"}, ` +
+        `настоящей доверенностью уполномочиваю ${data.agentName || "________________________"}, ` +
+        `паспорт: ${data.agentPassport || "________________________"}, представлять мои интересы по вопросу: ` +
+        `${data.purpose || "________________________"}.`;
+
+      y = wrapText(ctx, body, margin, y, PAGE_W - margin * 2, 45);
+      y += 35;
+
+      y = wrapText(ctx, `Доверенность выдана сроком до: ${data.validUntil}.`, margin, y, PAGE_W - margin * 2, 45);
+      y += 95;
+
+      ctx.fillText("Подпись доверителя: ______________________", margin, y);
+      y += 60;
+      ctx.font = "23px Georgia, 'Times New Roman', serif";
+      ctx.fillStyle = "#444";
+      ctx.fillText(data.principalName || "________________________", margin, y);
+
+      // Degrade text/page a little
+      addImageNoise(ctx, PAGE_W, PAGE_H, data.scanStrength, true);
+
+      return pageCanvas;
+    }
+
+    function addImageNoise(ctx, width, height, strength, subtle=false) {
       const imageData = ctx.getImageData(0, 0, width, height);
       const data = imageData.data;
 
-      const amountMap = {
-        light: 0.012,
-        medium: 0.025,
-        heavy: 0.045
-      };
+      const amountMap = subtle
+        ? { light: 0.006, medium: 0.013, heavy: 0.025 }
+        : { light: 0.012, medium: 0.025, heavy: 0.045 };
 
       const amount = amountMap[strength] || amountMap.medium;
 
       for (let i = 0; i < data.length; i += 4) {
         if (Math.random() < amount) {
-          const n = Math.floor(Math.random() * 45) - 22;
+          const n = Math.floor(Math.random() * 42) - 20;
           data[i] = Math.max(0, Math.min(255, data[i] + n));
           data[i + 1] = Math.max(0, Math.min(255, data[i + 1] + n));
           data[i + 2] = Math.max(0, Math.min(255, data[i + 2] + n));
@@ -256,94 +329,103 @@
       ctx.putImageData(imageData, 0, 0);
     }
 
-    function drawScannerLines(ctx, width, height, strength) {
-      const count = strength === "heavy" ? 14 : strength === "medium" ? 8 : 4;
-      ctx.save();
-      ctx.globalAlpha = strength === "heavy" ? 0.08 : 0.045;
-      ctx.strokeStyle = "#222";
-      ctx.lineWidth = 1;
+    function roundedTableBackground(ctx, w, h) {
+      // tabletop / scanner-bed background
+      const grad = ctx.createLinearGradient(0, 0, w, h);
+      grad.addColorStop(0, "#b9b3aa");
+      grad.addColorStop(0.45, "#9f998f");
+      grad.addColorStop(1, "#817b72");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, w, h);
 
-      for (let i = 0; i < count; i++) {
-        const y = Math.random() * height;
+      // table texture
+      ctx.save();
+      ctx.globalAlpha = 0.08;
+      for (let i = 0; i < 2200; i++) {
+        const x = Math.random() * w;
+        const y = Math.random() * h;
+        const len = 10 + Math.random() * 45;
+        ctx.strokeStyle = Math.random() > 0.5 ? "#fff" : "#333";
         ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(width, y + Math.random() * 3);
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + len, y + Math.random() * 4 - 2);
         ctx.stroke();
       }
-
       ctx.restore();
+
+      // vignette
+      const radial = ctx.createRadialGradient(w/2, h/2, w*0.25, w/2, h/2, w*0.75);
+      radial.addColorStop(0, "rgba(255,255,255,0.08)");
+      radial.addColorStop(1, "rgba(0,0,0,0.22)");
+      ctx.fillStyle = radial;
+      ctx.fillRect(0, 0, w, h);
     }
 
     function renderPreview() {
       const d = getData();
+      const ctx = sceneCtx;
+      const w = sceneCanvas.width;
+      const h = sceneCanvas.height;
 
-      // clean base
       ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, w, h);
 
-      // slight page rotation
-      const angleMap = { light: 0.002, medium: 0.005, heavy: 0.008 };
-      const angle = (Math.random() - 0.5) * angleMap[d.scanStrength];
+      roundedTableBackground(ctx, w, h);
+
+      const page = drawPaperDocument(d);
+
+      // Draw shadow and page as if it lies on a table.
+      const scale = 0.86;
+      const drawW = PAGE_W * scale;
+      const drawH = PAGE_H * scale;
+      const x = (w - drawW) / 2 + 10;
+      const y = (h - drawH) / 2 - 5;
+
+      const angleMap = { light: -0.012, medium: -0.018, heavy: -0.025 };
+      const angle = angleMap[d.scanStrength] + (Math.random() - 0.5) * 0.01;
 
       ctx.save();
-      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.translate(w / 2, h / 2);
       ctx.rotate(angle);
-      ctx.translate(-canvas.width / 2, -canvas.height / 2);
+      ctx.translate(-w / 2, -h / 2);
 
-      // paper background
-      ctx.fillStyle = "#f5f5f1";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // soft page shadow
+      ctx.save();
+      ctx.shadowColor = "rgba(0,0,0,0.42)";
+      ctx.shadowBlur = d.scanStrength === "heavy" ? 34 : 24;
+      ctx.shadowOffsetX = 22;
+      ctx.shadowOffsetY = 28;
+      ctx.fillStyle = "rgba(0,0,0,0.18)";
+      ctx.fillRect(x, y, drawW, drawH);
+      ctx.restore();
 
-      // subtle uneven paper tint
-      const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-      grad.addColorStop(0, "rgba(255,255,255,0.18)");
-      grad.addColorStop(1, "rgba(210,210,205,0.16)");
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // page border + page image
+      ctx.drawImage(page, x, y, drawW, drawH);
 
-      ctx.fillStyle = "#222";
-      ctx.textBaseline = "top";
-
-      const margin = 115;
-      let y = 135;
-
-      ctx.font = "bold 42px Georgia, 'Times New Roman', serif";
-      ctx.textAlign = "center";
-      ctx.fillText("ДОВЕРЕННОСТЬ", canvas.width / 2, y);
-      y += 95;
-
-      ctx.textAlign = "left";
-      ctx.font = "28px Georgia, 'Times New Roman', serif";
-      ctx.fillText(`${d.city}, ${d.docDate}`, margin, y);
-      y += 75;
-
-      ctx.font = "28px Georgia, 'Times New Roman', serif";
-      ctx.lineWidth = 0.4;
-
-      const body =
-        `Я, ${d.principalName || "________________________"}, паспорт: ${d.principalPassport || "________________________"}, ` +
-        `зарегистрированный(ая) по адресу: ${d.principalAddress || "________________________"}, ` +
-        `настоящей доверенностью уполномочиваю ${d.agentName || "________________________"}, ` +
-        `паспорт: ${d.agentPassport || "________________________"}, представлять мои интересы по вопросу: ` +
-        `${d.purpose || "________________________"}.`;
-
-      y = wrapText(ctx, body, margin, y, canvas.width - margin * 2, 45);
-      y += 35;
-
-      y = wrapText(ctx, `Доверенность выдана сроком до: ${d.validUntil}.`, margin, y, canvas.width - margin * 2, 45);
-      y += 95;
-
-      ctx.fillText("Подпись доверителя: ______________________", margin, y);
-      y += 60;
-      ctx.font = "23px Georgia, 'Times New Roman', serif";
-      ctx.fillStyle = "#444";
-      ctx.fillText(d.principalName || "________________________", margin, y);
+      // slightly darker edge
+      ctx.strokeStyle = "rgba(0,0,0,0.15)";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x, y, drawW, drawH);
 
       ctx.restore();
 
-      // flatten and degrade whole page
-      drawNoise(ctx, canvas.width, canvas.height, d.scanStrength);
-      drawScannerLines(ctx, canvas.width, canvas.height, d.scanStrength);
+      // Lens/scanner imperfection over whole output
+      addImageNoise(ctx, w, h, d.scanStrength, false);
+
+      // Slight horizontal scanner lines
+      ctx.save();
+      ctx.globalAlpha = d.scanStrength === "heavy" ? 0.08 : 0.04;
+      ctx.strokeStyle = "#111";
+      ctx.lineWidth = 1;
+      const lineCount = d.scanStrength === "heavy" ? 12 : d.scanStrength === "medium" ? 7 : 3;
+      for (let i = 0; i < lineCount; i++) {
+        const yy = Math.random() * h;
+        ctx.beginPath();
+        ctx.moveTo(0, yy);
+        ctx.lineTo(w, yy + Math.random() * 3);
+        ctx.stroke();
+      }
+      ctx.restore();
     }
 
     function dataURLToBinaryString(dataURL) {
@@ -352,13 +434,12 @@
     }
 
     function makePdfFromCanvas(canvas) {
-      // JPEG image embedded into a minimal single-page PDF.
-      // No external libraries required.
-      const jpegDataURL = canvas.toDataURL("image/jpeg", 0.72);
+      const jpegDataURL = canvas.toDataURL("image/jpeg", 0.76);
       const imgBinary = dataURLToBinaryString(jpegDataURL);
       const imgLength = imgBinary.length;
 
-      const pageW = 595.28; // A4 pt
+      // Landscape-ish image inside portrait A4 PDF.
+      const pageW = 595.28;
       const pageH = 841.89;
 
       const objects = [];
@@ -367,7 +448,24 @@
       objects.push("<< /Type /Pages /Kids [3 0 R] /Count 1 >>");
       objects.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageW} ${pageH}] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>`);
       objects.push(`<< /Type /XObject /Subtype /Image /Width ${canvas.width} /Height ${canvas.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${imgLength} >>\nstream\n${imgBinary}\nendstream`);
-      const content = `q\n${pageW} 0 0 ${pageH} 0 0 cm\n/Im0 Do\nQ`;
+
+      const imgRatio = canvas.width / canvas.height;
+      const pageRatio = pageW / pageH;
+
+      let drawW, drawH, drawX, drawY;
+      if (imgRatio > pageRatio) {
+        drawW = pageW;
+        drawH = pageW / imgRatio;
+        drawX = 0;
+        drawY = (pageH - drawH) / 2;
+      } else {
+        drawH = pageH;
+        drawW = pageH * imgRatio;
+        drawX = (pageW - drawW) / 2;
+        drawY = 0;
+      }
+
+      const content = `q\n${drawW} 0 0 ${drawH} ${drawX} ${drawY} cm\n/Im0 Do\nQ`;
       objects.push(`<< /Length ${content.length} >>\nstream\n${content}\nendstream`);
 
       let pdf = "%PDF-1.4\n";
@@ -399,12 +497,12 @@
     function renderAndDownload() {
       renderPreview();
 
-      const blob = makePdfFromCanvas(canvas);
+      const blob = makePdfFromCanvas(sceneCanvas);
       const url = URL.createObjectURL(blob);
 
       const a = document.createElement("a");
       a.href = url;
-      a.download = "doverennost_scanned.pdf";
+      a.download = "doverennost_scan_table.pdf";
       document.body.appendChild(a);
       a.click();
 
