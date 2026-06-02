@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Генератор доверенности</title>
+  <style>
+    :root {
+      --bg: #f6f2ea;
+      --card: #ffffff;
+      --text: #222;
+      --muted: #666;
+      --border: #ddd;
+      --accent: #2d5c88;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 24px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 26px;
+    }
+
+    p {
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin: 14px 0 6px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font: inherit;
+      background: white;
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 16px;
+      padding: 13px 16px;
+      border: 0;
+      border-radius: 12px;
+      background: var(--accent);
+      color: white;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button:hover {
+      filter: brightness(0.95);
+    }
+
+    .preview-box {
+      overflow: auto;
+      text-align: center;
+    }
+
+    canvas {
+      width: 100%;
+      max-width: 650px;
+      height: auto;
+      background: white;
+      border: 1px solid #ccc;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    }
+
+    .note {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 12px;
+    }
+
+    @media (max-width: 900px) {
+      .wrap {
+        grid-template-columns: 1fr;
+        padding: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="card">
+      <h1>Генератор доверенности</h1>
+      <p>Заполни поля, посмотри предпросмотр и скачай PDF с лёгким эффектом скана.</p>
+
+      <label>ФИО доверителя</label>
+      <input id="principalName" value="Иванов Иван Иванович">
+
+      <label>Паспорт доверителя</label>
+      <input id="principalPassport" value="серия 0000 № 000000, выдан ...">
+
+      <label>Адрес доверителя</label>
+      <input id="principalAddress" value="г. Новосибирск, ул. Ипподромская, д. 27, кв. 51">
+
+      <label>ФИО представителя</label>
+      <input id="agentName" value="Петров Пётр Петрович">
+
+      <label>Паспорт представителя</label>
+      <input id="agentPassport" value="серия 1111 № 111111, выдан ...">
+
+      <label>Город</label>
+      <input id="city" value="г. Новосибирск">
+
+      <label>Дата доверенности</label>
+      <input id="docDate" type="date">
+
+      <label>Действует до</label>
+      <input id="validUntil" type="date">
+
+      <label>Для чего выдана доверенность</label>
+      <textarea id="purpose">получения, подачи и подписания необходимых документов</textarea>
+
+      <label>Сила эффекта скана</label>
+      <select id="scanStrength">
+        <option value="light">Лёгкий</option>
+        <option value="medium" selected>Средний</option>
+        <option value="heavy">Сильный</option>
+      </select>
+
+      <button onclick="renderAndDownload()">Скачать PDF</button>
+      <button onclick="renderPreview()" style="background:#777;">Обновить предпросмотр</button>
+
+      <div class="note">
+        MVP работает полностью в браузере: данные никуда не отправляются.
+      </div>
+    </section>
+
+    <section class="card preview-box">
+      <canvas id="docCanvas" width="1240" height="1754"></canvas>
+    </section>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("docCanvas");
+    const ctx = canvas.getContext("2d");
+
+    function todayISO() {
+      const d = new Date();
+      return d.toISOString().slice(0, 10);
+    }
+
+    function nextYearISO() {
+      const d = new Date();
+      d.setFullYear(d.getFullYear() + 1);
+      return d.toISOString().slice(0, 10);
+    }
+
+    document.getElementById("docDate").value = todayISO();
+    document.getElementById("validUntil").value = nextYearISO();
+
+    function formatDate(iso) {
+      if (!iso) return "";
+      const [y, m, d] = iso.split("-");
+      return `${d}.${m}.${y}`;
+    }
+
+    function getData() {
+      return {
+        principalName: document.getElementById("principalName").value.trim(),
+        principalPassport: document.getElementById("principalPassport").value.trim(),
+        principalAddress: document.getElementById("principalAddress").value.trim(),
+        agentName: document.getElementById("agentName").value.trim(),
+        agentPassport: document.getElementById("agentPassport").value.trim(),
+        city: document.getElementById("city").value.trim(),
+        docDate: formatDate(document.getElementById("docDate").value),
+        validUntil: formatDate(document.getElementById("validUntil").value),
+        purpose: document.getElementById("purpose").value.trim(),
+        scanStrength: document.getElementById("scanStrength").value
+      };
+    }
+
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+      const words = text.split(/\s+/);
+      let line = "";
+
+      for (let i = 0; i < words.length; i++) {
+        const testLine = line ? line + " " + words[i] : words[i];
+        const metrics = ctx.measureText(testLine);
+
+        if (metrics.width > maxWidth && line) {
+          ctx.fillText(line, x, y);
+          line = words[i];
+          y += lineHeight;
+        } else {
+          line = testLine;
+        }
+      }
+
+      if (line) {
+        ctx.fillText(line, x, y);
+        y += lineHeight;
+      }
+
+      return y;
+    }
+
+    function drawNoise(ctx, width, height, strength) {
+      const imageData = ctx.getImageData(0, 0, width, height);
+      const data = imageData.data;
+
+      const amountMap = {
+        light: 0.012,
+        medium: 0.025,
+        heavy: 0.045
+      };
+
+      const amount = amountMap[strength] || amountMap.medium;
+
+      for (let i = 0; i < data.length; i += 4) {
+        if (Math.random() < amount) {
+          const n = Math.floor(Math.random() * 45) - 22;
+          data[i] = Math.max(0, Math.min(255, data[i] + n));
+          data[i + 1] = Math.max(0, Math.min(255, data[i + 1] + n));
+          data[i + 2] = Math.max(0, Math.min(255, data[i + 2] + n));
+        }
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+    }
+
+    function drawScannerLines(ctx, width, height, strength) {
+      const count = strength === "heavy" ? 14 : strength === "medium" ? 8 : 4;
+      ctx.save();
+      ctx.globalAlpha = strength === "heavy" ? 0.08 : 0.045;
+      ctx.strokeStyle = "#222";
+      ctx.lineWidth = 1;
+
+      for (let i = 0; i < count; i++) {
+        const y = Math.random() * height;
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y + Math.random() * 3);
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    }
+
+    function renderPreview() {
+      const d = getData();
+
+      // clean base
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // slight page rotation
+      const angleMap = { light: 0.002, medium: 0.005, heavy: 0.008 };
+      const angle = (Math.random() - 0.5) * angleMap[d.scanStrength];
+
+      ctx.save();
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate(angle);
+      ctx.translate(-canvas.width / 2, -canvas.height / 2);
+
+      // paper background
+      ctx.fillStyle = "#f5f5f1";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // subtle uneven paper tint
+      const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      grad.addColorStop(0, "rgba(255,255,255,0.18)");
+      grad.addColorStop(1, "rgba(210,210,205,0.16)");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "#222";
+      ctx.textBaseline = "top";
+
+      const margin = 115;
+      let y = 135;
+
+      ctx.font = "bold 42px Georgia, 'Times New Roman', serif";
+      ctx.textAlign = "center";
+      ctx.fillText("ДОВЕРЕННОСТЬ", canvas.width / 2, y);
+      y += 95;
+
+      ctx.textAlign = "left";
+      ctx.font = "28px Georgia, 'Times New Roman', serif";
+      ctx.fillText(`${d.city}, ${d.docDate}`, margin, y);
+      y += 75;
+
+      ctx.font = "28px Georgia, 'Times New Roman', serif";
+      ctx.lineWidth = 0.4;
+
+      const body =
+        `Я, ${d.principalName || "________________________"}, паспорт: ${d.principalPassport || "________________________"}, ` +
+        `зарегистрированный(ая) по адресу: ${d.principalAddress || "________________________"}, ` +
+        `настоящей доверенностью уполномочиваю ${d.agentName || "________________________"}, ` +
+        `паспорт: ${d.agentPassport || "________________________"}, представлять мои интересы по вопросу: ` +
+        `${d.purpose || "________________________"}.`;
+
+      y = wrapText(ctx, body, margin, y, canvas.width - margin * 2, 45);
+      y += 35;
+
+      y = wrapText(ctx, `Доверенность выдана сроком до: ${d.validUntil}.`, margin, y, canvas.width - margin * 2, 45);
+      y += 95;
+
+      ctx.fillText("Подпись доверителя: ______________________", margin, y);
+      y += 60;
+      ctx.font = "23px Georgia, 'Times New Roman', serif";
+      ctx.fillStyle = "#444";
+      ctx.fillText(d.principalName || "________________________", margin, y);
+
+      ctx.restore();
+
+      // flatten and degrade whole page
+      drawNoise(ctx, canvas.width, canvas.height, d.scanStrength);
+      drawScannerLines(ctx, canvas.width, canvas.height, d.scanStrength);
+    }
+
+    function dataURLToBinaryString(dataURL) {
+      const base64 = dataURL.split(",")[1];
+      return atob(base64);
+    }
+
+    function makePdfFromCanvas(canvas) {
+      // JPEG image embedded into a minimal single-page PDF.
+      // No external libraries required.
+      const jpegDataURL = canvas.toDataURL("image/jpeg", 0.72);
+      const imgBinary = dataURLToBinaryString(jpegDataURL);
+      const imgLength = imgBinary.length;
+
+      const pageW = 595.28; // A4 pt
+      const pageH = 841.89;
+
+      const objects = [];
+
+      objects.push("<< /Type /Catalog /Pages 2 0 R >>");
+      objects.push("<< /Type /Pages /Kids [3 0 R] /Count 1 >>");
+      objects.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageW} ${pageH}] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>`);
+      objects.push(`<< /Type /XObject /Subtype /Image /Width ${canvas.width} /Height ${canvas.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${imgLength} >>\nstream\n${imgBinary}\nendstream`);
+      const content = `q\n${pageW} 0 0 ${pageH} 0 0 cm\n/Im0 Do\nQ`;
+      objects.push(`<< /Length ${content.length} >>\nstream\n${content}\nendstream`);
+
+      let pdf = "%PDF-1.4\n";
+      const offsets = [0];
+
+      for (let i = 0; i < objects.length; i++) {
+        offsets.push(pdf.length);
+        pdf += `${i + 1} 0 obj\n${objects[i]}\nendobj\n`;
+      }
+
+      const xrefPos = pdf.length;
+      pdf += `xref\n0 ${objects.length + 1}\n`;
+      pdf += "0000000000 65535 f \n";
+      for (let i = 1; i < offsets.length; i++) {
+        pdf += String(offsets[i]).padStart(10, "0") + " 00000 n \n";
+      }
+
+      pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\n`;
+      pdf += `startxref\n${xrefPos}\n%%EOF`;
+
+      const bytes = new Uint8Array(pdf.length);
+      for (let i = 0; i < pdf.length; i++) {
+        bytes[i] = pdf.charCodeAt(i) & 0xff;
+      }
+
+      return new Blob([bytes], { type: "application/pdf" });
+    }
+
+    function renderAndDownload() {
+      renderPreview();
+
+      const blob = makePdfFromCanvas(canvas);
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "doverennost_scanned.pdf";
+      document.body.appendChild(a);
+      a.click();
+
+      setTimeout(() => {
+        URL.revokeObjectURL(url);
+        a.remove();
+      }, 1000);
+    }
+
+    renderPreview();
+  </script>
+</body>
+</html>
