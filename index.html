@@ -5,142 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Генератор доверенности</title>
   <style>
-    :root {
-      --bg: #f3f4f6;
-      --card: #ffffff;
-      --text: #111827;
-      --muted: #6b7280;
-      --border: #d1d5db;
-      --button: #111827;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    .page {
-      max-width: 1240px;
-      margin: 0 auto;
-      padding: 24px;
-    }
-
-    header {
-      margin-bottom: 18px;
-    }
-
-    h1 {
-      margin: 0 0 6px;
-      font-size: 26px;
-    }
-
-    header p {
-      margin: 0;
-      color: var(--muted);
-    }
-
-    .layout {
-      display: grid;
-      grid-template-columns: 410px 1fr;
-      gap: 20px;
-      align-items: start;
-    }
-
-    .panel {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 18px;
-      box-shadow: 0 8px 24px rgba(0,0,0,.06);
-    }
-
-    h2 {
-      margin: 0 0 12px;
-      font-size: 18px;
-    }
-
-    h3 {
-      margin: 20px 0 8px;
-      font-size: 15px;
-      border-top: 1px solid #eee;
-      padding-top: 14px;
-    }
-
-    label {
-      display: block;
-      margin: 12px 0 5px;
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    input, textarea {
-      width: 100%;
-      border: 1px solid var(--border);
-      border-radius: 9px;
-      padding: 9px 10px;
-      font: inherit;
-      background: #fff;
-    }
-
-    textarea {
-      min-height: 82px;
-      resize: vertical;
-    }
-
-    .row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    button {
-      width: 100%;
-      margin-top: 14px;
-      padding: 13px 15px;
-      border: 0;
-      border-radius: 10px;
-      background: var(--button);
-      color: white;
-      font-weight: 800;
-      font-size: 15px;
-      cursor: pointer;
-    }
-
-    button.secondary { background: #6b7280; }
-
-    .preview-panel { text-align: center; }
-
-    canvas {
-      width: 100%;
-      max-width: 760px;
-      height: auto;
-      background: white;
-      box-shadow: 0 10px 26px rgba(0,0,0,.16);
-    }
-
-    .hint {
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.4;
-    }
-
-    @media (max-width: 920px) {
-      .page { padding: 12px; }
-      .layout { grid-template-columns: 1fr; }
-      canvas { max-width: 100%; }
-    }
+    :root{--bg:#f3f4f6;--card:#fff;--text:#111827;--muted:#6b7280;--border:#d1d5db;--button:#111827}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+    .page{max-width:1240px;margin:0 auto;padding:24px}
+    header{margin-bottom:18px}
+    h1{margin:0 0 6px;font-size:26px}
+    header p{margin:0;color:var(--muted)}
+    .layout{display:grid;grid-template-columns:410px 1fr;gap:20px;align-items:start}
+    .panel{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;box-shadow:0 8px 24px rgba(0,0,0,.06)}
+    h2{margin:0 0 12px;font-size:18px}
+    h3{margin:20px 0 8px;font-size:15px;border-top:1px solid #eee;padding-top:14px}
+    label{display:block;margin:12px 0 5px;font-size:13px;font-weight:700}
+    input,textarea{width:100%;border:1px solid var(--border);border-radius:9px;padding:9px 10px;font:inherit;background:#fff}
+    textarea{min-height:82px;resize:vertical}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    button{width:100%;margin-top:14px;padding:13px 15px;border:0;border-radius:10px;background:var(--button);color:white;font-weight:800;font-size:15px;cursor:pointer}
+    button.secondary{background:#6b7280}
+    .preview-panel{text-align:center}
+    canvas{width:100%;max-width:760px;height:auto;background:white;box-shadow:0 10px 26px rgba(0,0,0,.16)}
+    .hint{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.4}
+    @media(max-width:920px){.page{padding:12px}.layout{grid-template-columns:1fr}canvas{max-width:100%}}
   </style>
 </head>
 <body>
 <div class="page">
   <header>
     <h1>Генератор доверенности</h1>
-    <p>Форма DPD-style: A4, Times New Roman 12pt, ЧБ, лёгкий scan effect, динамическая таблица.</p>
+    <p>A4, Times New Roman 12pt, ЧБ scan effect, подпись и печать внизу.</p>
   </header>
 
   <div class="layout">
@@ -148,526 +40,171 @@
       <h2>Данные доверенности</h2>
 
       <div class="row">
-        <div>
-          <label>Номер доверенности</label>
-          <input id="poaNumber" value="16">
-        </div>
-        <div>
-          <label>Дата</label>
-          <input id="poaDate" value="31 июля 2023 года">
-        </div>
+        <div><label>Номер доверенности</label><input id="poaNumber" value="16"></div>
+        <div><label>Дата</label><input id="poaDate" value="31 июля 2023 года"></div>
       </div>
 
-      <label>Город</label>
-      <input id="city" value="Новосибирск">
+      <label>Город</label><input id="city" value="Новосибирск">
 
       <h3>Получатель</h3>
-
-      <label>Наименование / ФИО</label>
-      <input id="recipientName" value="Индивидуальный предприниматель Нуриева Софья Назимовна">
-
-      <label>ИНН</label>
-      <input id="recipientInn" value="540602942801">
-
-      <label>Юридический адрес</label>
-      <textarea id="recipientAddress">630005, РОССИЯ, Новосибирск, Улица Ипподромская, д. 27, кв. 51</textarea>
+      <label>Наименование / ФИО</label><input id="recipientName" value="Индивидуальный предприниматель Нуриева Софья Назимовна">
+      <label>ИНН</label><input id="recipientInn" value="540602942801">
+      <label>Юридический адрес</label><textarea id="recipientAddress">630005, РОССИЯ, Новосибирск, Улица Ипподромская, д. 27, кв. 51</textarea>
 
       <h3>Экспедитор</h3>
-
-      <label>Наименование</label>
-      <input id="forwarderName" value="АО «ДПД РУС»">
-
-      <label>ИНН</label>
-      <input id="forwarderInn" value="7713215523">
+      <label>Наименование</label><input id="forwarderName" value="АО «ДПД РУС»">
+      <label>ИНН</label><input id="forwarderInn" value="7713215523">
 
       <h3>Отправитель</h3>
-
-      <label>Наименование</label>
-      <input id="senderName" value='ООО "КПФ МИЛОРАДА"'>
-
-      <label>ИНН</label>
-      <input id="senderInn" value="7715021474">
-
-      <label>Юридический адрес</label>
-      <textarea id="senderAddress">129085, Москва г, Годовикова ул, дом № 9, строение 16</textarea>
-
-      <label>Телефон</label>
-      <input id="senderPhone" value="+7 (495) 9569801">
+      <label>Наименование</label><input id="senderName" value='ООО "КПФ МИЛОРАДА"'>
+      <label>ИНН</label><input id="senderInn" value="7715021474">
+      <label>Юридический адрес</label><textarea id="senderAddress">129085, Москва г, Годовикова ул, дом № 9, строение 16</textarea>
+      <label>Телефон</label><input id="senderPhone" value="+7 (495) 9569801">
 
       <h3>Документы</h3>
-
-      <label>Счета</label>
-      <input id="invoiceNumbers" value="№ 2554 от 2.06.2023, № 3393 от 19.07.2023">
-
-      <label>Накладная №</label>
-      <input id="waybillNumber" value="RU085104562">
-
-      <label>Действительна до</label>
-      <input id="validUntil" value="30 августа 2023 года">
+      <label>Счета</label><input id="invoiceNumbers" value="№ 2554 от 2.06.2023, № 3393 от 19.07.2023">
+      <label>Накладная №</label><input id="waybillNumber" value="RU085104562">
+      <label>Действительна до</label><input id="validUntil" value="30 августа 2023 года">
 
       <h3>Материальные ценности</h3>
       <label>Каждая строка: Наименование; Количество; Вес нетто</label>
-      <textarea id="items" style="min-height: 135px;">LECIGEL (Лецигель); 1 коробка; 5 кг
+      <textarea id="items" style="min-height:135px;">LECIGEL (Лецигель); 1 коробка; 5 кг
 Canadian Willowherb 5% clear (Виллоухерб); 1 канистра; 1 кг
 ZIBOXAN TRH (Ксантановая камедь Зибоксан ТРХ); 1 упаковка; 25 кг</textarea>
 
-      <label>Подпись / нижняя строка</label>
-      <input id="signatory" value="ИП Нуриева Софья Назимовна">
+      <label>Подпись / нижняя строка</label><input id="signatory" value="ИП Нуриева Софья Назимовна">
 
       <button onclick="downloadPdf()">Скачать PDF</button>
       <button class="secondary" onclick="renderPreview()">Обновить предпросмотр</button>
 
-      <div class="hint">
-        Данные не отправляются на сервер. PDF создаётся локально в браузере.
-      </div>
+      <div class="hint">Файлы <code>signature.png</code> и <code>stamp.png</code> должны лежать рядом с index.html.</div>
     </section>
 
     <section class="panel preview-panel">
       <h2>Предпросмотр</h2>
       <canvas id="canvas" width="1240" height="1754"></canvas>
-      <div class="hint">
-        Если позиций слишком много, таблица автоматически уменьшает высоту строк и шрифт.
-      </div>
+      <div class="hint">PDF создаётся локально в браузере. Данные никуда не отправляются.</div>
     </section>
   </div>
 </div>
 
 <script>
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
+const canvas=document.getElementById("canvas"),ctx=canvas.getContext("2d");
+const W=canvas.width,H=canvas.height,FONT_SIZE=25,SMALL_FONT_SIZE=22,LINE_H=38,LEFT=115,RIGHT=W-115,TOP=145;
 
-const W = canvas.width;
-const H = canvas.height;
+const signatureImg=new Image(); signatureImg.src="signature.png";
+const stampImg=new Image(); stampImg.src="stamp.png";
+let assetsLoaded=0;
+function assetLoaded(){assetsLoaded++; if(assetsLoaded>=2) renderPreview();}
+signatureImg.onload=assetLoaded; stampImg.onload=assetLoaded;
+signatureImg.onerror=assetLoaded; stampImg.onerror=assetLoaded;
 
-// A4 at ~150 dpi ratio: 1240x1754.
-// Times New Roman 12pt at this canvas scale ≈ 25px.
-// This is visually close to 12pt on A4 preview/PDF.
-const FONT_SIZE = 25;
-const SMALL_FONT_SIZE = 22;
-const LINE_H = 38;
+function v(id){return document.getElementById(id).value.trim();}
+function parseItems(text){return text.split(/\n+/).map(x=>x.trim()).filter(Boolean).map((line,i)=>{const p=line.split(";").map(s=>s.trim());return{number:String(i+1),name:p[0]||"",qty:p[1]||"",weight:p[2]||""};});}
+function getData(){return{poaNumber:v("poaNumber"),poaDate:v("poaDate"),city:v("city"),recipientName:v("recipientName"),recipientInn:v("recipientInn"),recipientAddress:v("recipientAddress"),forwarderName:v("forwarderName"),forwarderInn:v("forwarderInn"),senderName:v("senderName"),senderInn:v("senderInn"),senderAddress:v("senderAddress"),senderPhone:v("senderPhone"),invoiceNumbers:v("invoiceNumbers"),waybillNumber:v("waybillNumber"),validUntil:v("validUntil"),signatory:v("signatory"),items:parseItems(v("items"))};}
+function setFont(size=FONT_SIZE,bold=false){ctx.font=`${bold?"bold ":""}${size}px "Times New Roman", Times, serif`;}
+function wrapText(text,x,y,maxWidth,lineHeight,size=FONT_SIZE,bold=false){setFont(size,bold);const words=String(text).split(/\s+/);let line="";for(const word of words){const test=line?line+" "+word:word;if(ctx.measureText(test).width>maxWidth&&line){ctx.fillText(line,x,y);y+=lineHeight;line=word;}else line=test;}if(line){ctx.fillText(line,x,y);y+=lineHeight;}return y;}
+function wrapLines(text,maxWidth,size=FONT_SIZE,bold=false){setFont(size,bold);const words=String(text).split(/\s+/),lines=[];let line="";for(const word of words){const test=line?line+" "+word:word;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=word;}else line=test;}if(line)lines.push(line);return lines;}
 
-// Page margins, similar to Word document.
-const LEFT = 115;
-const RIGHT = W - 115;
-const TOP = 145;
-
-function v(id) {
-  return document.getElementById(id).value.trim();
-}
-
-function getData() {
-  return {
-    poaNumber: v("poaNumber"),
-    poaDate: v("poaDate"),
-    city: v("city"),
-    recipientName: v("recipientName"),
-    recipientInn: v("recipientInn"),
-    recipientAddress: v("recipientAddress"),
-    forwarderName: v("forwarderName"),
-    forwarderInn: v("forwarderInn"),
-    senderName: v("senderName"),
-    senderInn: v("senderInn"),
-    senderAddress: v("senderAddress"),
-    senderPhone: v("senderPhone"),
-    invoiceNumbers: v("invoiceNumbers"),
-    waybillNumber: v("waybillNumber"),
-    validUntil: v("validUntil"),
-    signatory: v("signatory"),
-    items: parseItems(v("items"))
-  };
-}
-
-function parseItems(text) {
-  return text
-    .split(/\n+/)
-    .map(line => line.trim())
-    .filter(Boolean)
-    .map((line, i) => {
-      const parts = line.split(";").map(p => p.trim());
-      return {
-        number: String(i + 1),
-        name: parts[0] || "",
-        qty: parts[1] || "",
-        weight: parts[2] || ""
-      };
-    });
-}
-
-function setFont(size = FONT_SIZE, bold = false) {
-  ctx.font = `${bold ? "bold " : ""}${size}px "Times New Roman", Times, serif`;
-}
-
-function wrapText(text, x, y, maxWidth, lineHeight, size = FONT_SIZE, bold = false) {
-  setFont(size, bold);
-  const words = String(text).split(/\s+/);
-  let line = "";
-
-  for (const word of words) {
-    const test = line ? line + " " + word : word;
-    if (ctx.measureText(test).width > maxWidth && line) {
-      ctx.fillText(line, x, y);
-      y += lineHeight;
-      line = word;
-    } else {
-      line = test;
-    }
+function addScanEffect(){
+  const imageData=ctx.getImageData(0,0,W,H),data=imageData.data;
+  for(let i=0;i<data.length;i+=4){
+    const x=(i/4)%W,y=Math.floor((i/4)/W);
+    let gray=data[i]*.299+data[i+1]*.587+data[i+2]*.114;
+    const dx=(x-W/2)/W,dy=(y-H/2)/H,vignette=Math.sqrt(dx*dx+dy*dy)*26,grain=(Math.random()-.5)*20;
+    gray=gray-vignette+grain; gray=(gray-128)*1.08+128; gray=Math.max(0,Math.min(255,gray));
+    data[i]=gray;data[i+1]=gray;data[i+2]=gray;
   }
-
-  if (line) {
-    ctx.fillText(line, x, y);
-    y += lineHeight;
-  }
-
-  return y;
-}
-
-function wrapLines(text, maxWidth, size = FONT_SIZE, bold = false) {
-  setFont(size, bold);
-  const words = String(text).split(/\s+/);
-  const lines = [];
-  let line = "";
-
-  for (const word of words) {
-    const test = line ? line + " " + word : word;
-    if (ctx.measureText(test).width > maxWidth && line) {
-      lines.push(line);
-      line = word;
-    } else {
-      line = test;
-    }
-  }
-  if (line) lines.push(line);
-  return lines;
-}
-
-function drawJustifiedLine(text, x, y, width) {
-  setFont(FONT_SIZE, false);
-  const words = String(text).trim().split(/\s+/);
-  if (words.length <= 1) {
-    ctx.fillText(text, x, y);
-    return;
-  }
-
-  const wordsWidth = words.reduce((sum, word) => sum + ctx.measureText(word).width, 0);
-  const space = (width - wordsWidth) / (words.length - 1);
-  let xx = x;
-
-  for (const word of words) {
-    ctx.fillText(word, xx, y);
-    xx += ctx.measureText(word).width + space;
-  }
-}
-
-function addScanEffect() {
-  const imageData = ctx.getImageData(0, 0, W, H);
-  const data = imageData.data;
-
-  for (let i = 0; i < data.length; i += 4) {
-    const x = (i / 4) % W;
-    const y = Math.floor((i / 4) / W);
-
-    // grayscale
-    let gray = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
-
-    // uneven scanner lighting / mild vignette
-    const dx = (x - W / 2) / W;
-    const dy = (y - H / 2) / H;
-    const vignette = Math.sqrt(dx * dx + dy * dy) * 28;
-
-    // fine paper grain
-    const grain = (Math.random() - 0.5) * 22;
-
-    gray = gray - vignette + grain;
-
-    // contrast
-    gray = (gray - 128) * 1.10 + 128;
-    gray = Math.max(0, Math.min(255, gray));
-
-    data[i] = gray;
-    data[i + 1] = gray;
-    data[i + 2] = gray;
-  }
-
-  ctx.putImageData(imageData, 0, 0);
-
-  // dust
+  ctx.putImageData(imageData,0,0);
   ctx.save();
-  ctx.fillStyle = "rgba(0,0,0,.5)";
-  for (let i = 0; i < 130; i++) {
-    const x = Math.random() * W;
-    const y = Math.random() * H;
-    const r = Math.random() < 0.93 ? Math.random() * 0.9 : 1.5 + Math.random() * 2.2;
-    ctx.beginPath();
-    ctx.arc(x, y, r, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  // very subtle scratches/fibres
-  ctx.globalAlpha = 0.11;
-  ctx.strokeStyle = "#000";
-  ctx.lineWidth = 0.55;
-  for (let i = 0; i < 95; i++) {
-    const x = Math.random() * W;
-    const y = Math.random() * H;
-    const len = 20 + Math.random() * 90;
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-    ctx.lineTo(x + len, y + Math.random() * 6 - 3);
-    ctx.stroke();
-  }
-
-  // scanner bands
-  ctx.globalAlpha = 0.03;
-  ctx.lineWidth = 1;
-  for (let i = 0; i < 9; i++) {
-    const y = Math.random() * H;
-    ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(W, y + Math.random() * 2);
-    ctx.stroke();
-  }
-
+  ctx.fillStyle="rgba(0,0,0,.45)";
+  for(let i=0;i<115;i++){const x=Math.random()*W,y=Math.random()*H,r=Math.random()<.94?Math.random()*.85:1.4+Math.random()*2;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();}
+  ctx.globalAlpha=.09;ctx.strokeStyle="#000";ctx.lineWidth=.55;
+  for(let i=0;i<80;i++){const x=Math.random()*W,y=Math.random()*H,len=18+Math.random()*80;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+len,y+Math.random()*6-3);ctx.stroke();}
   ctx.restore();
 }
 
-function drawTable(rows, x, y, width) {
-  const colNum = 80;
-  const colQty = 155;
-  const colWeight = 135;
-  const colName = width - colNum - colQty - colWeight;
-
-  let tableFont = FONT_SIZE;
-  let rowBase = 70;
-
-  if (rows.length > 8) {
-    tableFont = 22;
-    rowBase = 58;
+function drawTable(rows,x,y,width){
+  const colNum=80,colQty=155,colWeight=135,colName=width-colNum-colQty-colWeight;
+  let tableFont=FONT_SIZE,rowBase=70;if(rows.length>8){tableFont=22;rowBase=58;}if(rows.length>13){tableFont=19;rowBase=48;}
+  const headerH=58;
+  function cellText(text,cx,cy,cw,ch,size=tableFont,bold=false,align="left"){
+    const padding=12,maxWidth=cw-padding*2,lines=wrapLines(text,maxWidth,size,bold),lh=size+7;
+    let ty=cy+(ch-lines.length*lh)/2+size;setFont(size,bold);
+    for(const line of lines){let tx=cx+padding;if(align==="center")tx=cx+cw/2-ctx.measureText(line).width/2;ctx.fillText(line,tx,ty);ty+=lh;}
   }
-  if (rows.length > 13) {
-    tableFont = 19;
-    rowBase = 48;
-  }
-
-  const headerH = 58;
-
-  function cellText(text, cx, cy, cw, ch, size = tableFont, bold = false, align = "left") {
-    const padding = 12;
-    const maxWidth = cw - padding * 2;
-    const lines = wrapLines(text, maxWidth, size, bold);
-    const lh = size + 7;
-    let ty = cy + (ch - lines.length * lh) / 2 + size;
-
-    setFont(size, bold);
-    for (const line of lines) {
-      let tx = cx + padding;
-      if (align === "center") tx = cx + cw / 2 - ctx.measureText(line).width / 2;
-      ctx.fillText(line, tx, ty);
-      ty += lh;
-    }
-  }
-
-  function drawCellBorder(cx, cy, cw, ch) {
-    ctx.strokeRect(cx, cy, cw, ch);
-  }
-
-  ctx.save();
-  ctx.strokeStyle = "#111";
-  ctx.lineWidth = 1.15;
-  ctx.fillStyle = "#050505";
-  ctx.textBaseline = "alphabetic";
-
-  // Header
-  drawCellBorder(x, y, colNum, headerH);
-  drawCellBorder(x + colNum, y, colName, headerH);
-  drawCellBorder(x + colNum + colName, y, colQty, headerH);
-  drawCellBorder(x + colNum + colName + colQty, y, colWeight, headerH);
-
-  cellText("Номер", x, y, colNum, headerH, SMALL_FONT_SIZE, false, "center");
-  cellText("Наименование материальных ценностей", x + colNum, y, colName, headerH, SMALL_FONT_SIZE, false, "center");
-  cellText("Количество", x + colNum + colName, y, colQty, headerH, SMALL_FONT_SIZE, false, "center");
-  cellText("Вес нетто", x + colNum + colName + colQty, y, colWeight, headerH, SMALL_FONT_SIZE, false, "center");
-
-  y += headerH;
-
-  rows.forEach(row => {
-    const nameLines = wrapLines(row.name, colName - 24, tableFont, false);
-    const rowH = Math.max(rowBase, 22 + nameLines.length * (tableFont + 7));
-
-    drawCellBorder(x, y, colNum, rowH);
-    drawCellBorder(x + colNum, y, colName, rowH);
-    drawCellBorder(x + colNum + colName, y, colQty, rowH);
-    drawCellBorder(x + colNum + colName + colQty, y, colWeight, rowH);
-
-    cellText(row.number, x, y, colNum, rowH, tableFont, false, "center");
-    cellText(row.name, x + colNum, y, colName, rowH, tableFont, false, "left");
-    cellText(row.qty, x + colNum + colName, y, colQty, rowH, tableFont, false, "left");
-    cellText(row.weight, x + colNum + colName + colQty, y, colWeight, rowH, tableFont, false, "left");
-
-    y += rowH;
+  function border(cx,cy,cw,ch){ctx.strokeRect(cx,cy,cw,ch);}
+  ctx.save();ctx.strokeStyle="#111";ctx.lineWidth=1.15;ctx.fillStyle="#050505";ctx.textBaseline="alphabetic";
+  border(x,y,colNum,headerH);border(x+colNum,y,colName,headerH);border(x+colNum+colName,y,colQty,headerH);border(x+colNum+colName+colQty,y,colWeight,headerH);
+  cellText("Номер",x,y,colNum,headerH,SMALL_FONT_SIZE,false,"center");
+  cellText("Наименование материальных ценностей",x+colNum,y,colName,headerH,SMALL_FONT_SIZE,false,"center");
+  cellText("Количество",x+colNum+colName,y,colQty,headerH,SMALL_FONT_SIZE,false,"center");
+  cellText("Вес нетто",x+colNum+colName+colQty,y,colWeight,headerH,SMALL_FONT_SIZE,false,"center");
+  y+=headerH;
+  rows.forEach(row=>{
+    const nameLines=wrapLines(row.name,colName-24,tableFont,false),rowH=Math.max(rowBase,22+nameLines.length*(tableFont+7));
+    border(x,y,colNum,rowH);border(x+colNum,y,colName,rowH);border(x+colNum+colName,y,colQty,rowH);border(x+colNum+colName+colQty,y,colWeight,rowH);
+    cellText(row.number,x,y,colNum,rowH,tableFont,false,"center");
+    cellText(row.name,x+colNum,y,colName,rowH,tableFont,false,"left");
+    cellText(row.qty,x+colNum+colName,y,colQty,rowH,tableFont,false,"left");
+    cellText(row.weight,x+colNum+colName+colQty,y,colWeight,rowH,tableFont,false,"left");
+    y+=rowH;
   });
-
-  ctx.restore();
-  return y;
+  ctx.restore();return y;
 }
 
-function renderDocumentRaw() {
-  const d = getData();
-
-  // Pure A4 white sheet, no scanner border/rim.
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.clearRect(0, 0, W, H);
-  ctx.fillStyle = "#f7f7f4";
-  ctx.fillRect(0, 0, W, H);
-
-  // Very slight tilt: page content is scanned a bit crooked, but page remains A4.
-  ctx.save();
-  ctx.translate(W / 2, H / 2);
-  ctx.rotate(-0.004);
-  ctx.translate(-W / 2, -H / 2);
-
-  ctx.fillStyle = "#050505";
-  ctx.strokeStyle = "#050505";
-  ctx.lineWidth = 1.1;
-  ctx.textBaseline = "alphabetic";
-
-  let y = TOP;
-
-  setFont(FONT_SIZE, true);
-  ctx.textAlign = "center";
-  ctx.fillText(`ДОВЕРЕННОСТЬ № ${d.poaNumber}`, W / 2, y);
-
-  y += 70;
-
-  setFont(FONT_SIZE, false);
-  ctx.textAlign = "left";
-  ctx.fillText(`Город ${d.city}`, LEFT, y);
-  ctx.textAlign = "right";
-  ctx.fillText(d.poaDate, RIGHT, y);
-
-  y += 85;
-  ctx.textAlign = "left";
-
-  const intro =
-    `${d.recipientName}, ИНН: ${d.recipientInn}, юридический адрес: ${d.recipientAddress} ` +
-    `(далее – «Получатель») настоящим доверяет ${d.forwarderName}, ИНН ${d.forwarderInn} ` +
-    `(далее – «Экспедитор») совершать все необходимые действия, связанные с транспортно-` +
-    `экспедиционным обслуживанием грузов, предназначенных к перевозке от ${d.senderName}, ` +
-    `ИНН ${d.senderInn}, юридический адрес: ${d.senderAddress}, тел.: ${d.senderPhone} ` +
-    `(далее – «Отправитель»), в том числе:`;
-
-  y = wrapText(intro, LEFT, y, RIGHT - LEFT, LINE_H, FONT_SIZE, false);
-
-  y += 25;
-
-  const paragraph2 =
-    `Доставить получателю адресованный ему груз и товарно-материальные ценности по счетам ` +
-    `${d.invoiceNumbers}, выписанным на Получателя. Осуществить приемку, сопровождение и ` +
-    `транспортировку груза по накладной № ${d.waybillNumber}. Получить на руки от Отправителя ` +
-    `и передавать Получателю сопроводительные документы на груз, оформить накладную на груз, ` +
-    `сопроводительные, первичные и иные документы, получить от Отправителя необходимую информацию о грузе.`;
-
-  y = wrapText(paragraph2, LEFT, y, RIGHT - LEFT, LINE_H, FONT_SIZE, false);
-
-  y += 30;
-
-  const validText =
-    `Настоящая доверенность действительна до ${d.validUntil} без права передоверия третьим лицам.`;
-
-  y = wrapText(validText, LEFT, y, RIGHT - LEFT, LINE_H, FONT_SIZE, false);
-
-  y += 55;
-
-  setFont(FONT_SIZE, true);
-  ctx.fillText("Перечень материальных ценностей, подлежащих получению:", LEFT, y);
-  y += 45;
-
-  y = drawTable(d.items, LEFT, y, RIGHT - LEFT);
-
-  y += 95;
-
-  setFont(FONT_SIZE, false);
-  ctx.fillText(d.signatory, LEFT, y);
-
-  ctx.restore();
-
-  addScanEffect();
+function drawSignatureAndStamp(y,d){
+  const baseY=Math.min(y,H-330);
+  setFont(FONT_SIZE,false);ctx.fillStyle="#050505";ctx.fillText(d.signatory,LEFT,baseY);
+  if(signatureImg.complete&&signatureImg.naturalWidth){ctx.save();ctx.globalAlpha=.86;ctx.drawImage(signatureImg,LEFT+135,baseY+35,230,135);ctx.restore();}
+  if(stampImg.complete&&stampImg.naturalWidth){ctx.save();ctx.globalAlpha=.88;ctx.drawImage(stampImg,LEFT+465,baseY-8,255,255);ctx.restore();}
 }
 
-function renderPreview() {
-  renderDocumentRaw();
+function renderDocumentRaw(){
+  const d=getData();
+  ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,W,H);ctx.fillStyle="#f7f7f4";ctx.fillRect(0,0,W,H);
+  ctx.save();ctx.translate(W/2,H/2);ctx.rotate(-.004);ctx.translate(-W/2,-H/2);
+  ctx.fillStyle="#050505";ctx.strokeStyle="#050505";ctx.lineWidth=1.1;ctx.textBaseline="alphabetic";
+  let y=TOP;
+  setFont(FONT_SIZE,true);ctx.textAlign="center";ctx.fillText(`ДОВЕРЕННОСТЬ № ${d.poaNumber}`,W/2,y);
+  y+=70;setFont(FONT_SIZE,false);ctx.textAlign="left";ctx.fillText(`Город ${d.city}`,LEFT,y);ctx.textAlign="right";ctx.fillText(d.poaDate,RIGHT,y);
+  y+=85;ctx.textAlign="left";
+  const intro=`${d.recipientName}, ИНН: ${d.recipientInn}, юридический адрес: ${d.recipientAddress} (далее – «Получатель») настоящим доверяет ${d.forwarderName}, ИНН ${d.forwarderInn} (далее – «Экспедитор») совершать все необходимые действия, связанные с транспортно-экспедиционным обслуживанием грузов, предназначенных к перевозке от ${d.senderName}, ИНН ${d.senderInn}, юридический адрес: ${d.senderAddress}, тел.: ${d.senderPhone} (далее – «Отправитель»), в том числе:`;
+  y=wrapText(intro,LEFT,y,RIGHT-LEFT,LINE_H,FONT_SIZE,false);y+=25;
+  const paragraph2=`Доставить получателю адресованный ему груз и товарно-материальные ценности по счетам ${d.invoiceNumbers}, выписанным на Получателя. Осуществить приемку, сопровождение и транспортировку груза по накладной № ${d.waybillNumber}. Получить на руки от Отправителя и передавать Получателю сопроводительные документы на груз, оформить накладную на груз, сопроводительные, первичные и иные документы, получить от Отправителя необходимую информацию о грузе.`;
+  y=wrapText(paragraph2,LEFT,y,RIGHT-LEFT,LINE_H,FONT_SIZE,false);y+=30;
+  y=wrapText(`Настоящая доверенность действительна до ${d.validUntil} без права передоверия третьим лицам.`,LEFT,y,RIGHT-LEFT,LINE_H,FONT_SIZE,false);y+=55;
+  setFont(FONT_SIZE,true);ctx.fillText("Перечень материальных ценностей, подлежащих получению:",LEFT,y);y+=45;
+  y=drawTable(d.items,LEFT,y,RIGHT-LEFT);y+=90;
+  drawSignatureAndStamp(y,d);
+  ctx.restore();addScanEffect();
 }
+function renderPreview(){renderDocumentRaw();}
 
-function dataURLToBinaryString(dataURL) {
-  const base64 = dataURL.split(",")[1];
-  return atob(base64);
-}
-
-function makePdfFromCanvas(canvas) {
-  const jpegDataURL = canvas.toDataURL("image/jpeg", 0.84);
-  const imgBinary = dataURLToBinaryString(jpegDataURL);
-  const imgLength = imgBinary.length;
-
-  const pageW = 595.28; // A4 portrait in points
-  const pageH = 841.89;
-
-  const objects = [];
+function dataURLToBinaryString(dataURL){return atob(dataURL.split(",")[1]);}
+function makePdfFromCanvas(canvas){
+  const jpegDataURL=canvas.toDataURL("image/jpeg",.84),imgBinary=dataURLToBinaryString(jpegDataURL),imgLength=imgBinary.length;
+  const pageW=595.28,pageH=841.89,objects=[];
   objects.push("<< /Type /Catalog /Pages 2 0 R >>");
   objects.push("<< /Type /Pages /Kids [3 0 R] /Count 1 >>");
   objects.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageW} ${pageH}] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>`);
   objects.push(`<< /Type /XObject /Subtype /Image /Width ${canvas.width} /Height ${canvas.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${imgLength} >>\nstream\n${imgBinary}\nendstream`);
-
-  const content = `q\n${pageW} 0 0 ${pageH} 0 0 cm\n/Im0 Do\nQ`;
+  const content=`q\n${pageW} 0 0 ${pageH} 0 0 cm\n/Im0 Do\nQ`;
   objects.push(`<< /Length ${content.length} >>\nstream\n${content}\nendstream`);
-
-  let pdf = "%PDF-1.4\n";
-  const offsets = [0];
-
-  for (let i = 0; i < objects.length; i++) {
-    offsets.push(pdf.length);
-    pdf += `${i + 1} 0 obj\n${objects[i]}\nendobj\n`;
-  }
-
-  const xrefPos = pdf.length;
-  pdf += `xref\n0 ${objects.length + 1}\n`;
-  pdf += "0000000000 65535 f \n";
-
-  for (let i = 1; i < offsets.length; i++) {
-    pdf += String(offsets[i]).padStart(10, "0") + " 00000 n \n";
-  }
-
-  pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\n`;
-  pdf += `startxref\n${xrefPos}\n%%EOF`;
-
-  const bytes = new Uint8Array(pdf.length);
-  for (let i = 0; i < pdf.length; i++) {
-    bytes[i] = pdf.charCodeAt(i) & 0xff;
-  }
-
-  return new Blob([bytes], { type: "application/pdf" });
+  let pdf="%PDF-1.4\n";const offsets=[0];
+  for(let i=0;i<objects.length;i++){offsets.push(pdf.length);pdf+=`${i+1} 0 obj\n${objects[i]}\nendobj\n`;}
+  const xrefPos=pdf.length;pdf+=`xref\n0 ${objects.length+1}\n`;pdf+="0000000000 65535 f \n";
+  for(let i=1;i<offsets.length;i++)pdf+=String(offsets[i]).padStart(10,"0")+" 00000 n \n";
+  pdf+=`trailer\n<< /Size ${objects.length+1} /Root 1 0 R >>\nstartxref\n${xrefPos}\n%%EOF`;
+  const bytes=new Uint8Array(pdf.length);for(let i=0;i<pdf.length;i++)bytes[i]=pdf.charCodeAt(i)&0xff;
+  return new Blob([bytes],{type:"application/pdf"});
 }
-
-function downloadPdf() {
-  renderDocumentRaw();
-
-  const blob = makePdfFromCanvas(canvas);
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "doverennost_dpd_scan.pdf";
-  document.body.appendChild(a);
-  a.click();
-
-  setTimeout(() => {
-    URL.revokeObjectURL(url);
-    a.remove();
-  }, 1000);
+function downloadPdf(){
+  renderDocumentRaw();const blob=makePdfFromCanvas(canvas),url=URL.createObjectURL(blob);
+  const a=document.createElement("a");a.href=url;a.download="doverennost_dpd_scan.pdf";document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},1000);
 }
-
-document.querySelectorAll("input, textarea").forEach(el => {
-  el.addEventListener("input", renderPreview);
-});
-
+document.querySelectorAll("input, textarea").forEach(el=>el.addEventListener("input",renderPreview));
 renderPreview();
 </script>
 </body>
