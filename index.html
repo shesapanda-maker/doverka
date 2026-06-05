@@ -77,7 +77,7 @@ const W=canvas.width,H=canvas.height;
 
 // ==== НАСТРОЙКИ МАКЕТА ====
 // A4 canvas 1240x1754. Сдвиги можно править тут.
-const FONT_SIZE=20;             // ближе к Times New Roman 12pt в оригинале
+const FONT_SIZE=24;             // ближе к Times New Roman 12pt в оригинале
 const SMALL_FONT_SIZE=18;
 const LINE_H=24;                // плотный межстрочный интервал как в Word/PDF
 const LEFT=150;                 // левое поле
@@ -102,7 +102,54 @@ function v(id){return document.getElementById(id).value.trim();}
 function parseItems(text){return text.split(/\n+/).map(x=>x.trim()).filter(Boolean).map((line,i)=>{const p=line.split(";").map(s=>s.trim());return{number:String(i+1),name:p[0]||"",qty:p[1]||"",weight:p[2]||""};});}
 function getData(){return{poaNumber:v("poaNumber"),poaDate:v("poaDate"),city:v("city"),recipientName:v("recipientName"),recipientInn:v("recipientInn"),recipientAddress:v("recipientAddress"),forwarderName:v("forwarderName"),forwarderInn:v("forwarderInn"),senderName:v("senderName"),senderInn:v("senderInn"),senderAddress:v("senderAddress"),senderPhone:v("senderPhone"),invoiceNumbers:v("invoiceNumbers"),waybillNumber:v("waybillNumber"),validUntil:v("validUntil"),signatory:v("signatory"),items:parseItems(v("items"))};}
 function setFont(size=FONT_SIZE,bold=false){ctx.font=`${bold?"bold ":""}${size}px "Times New Roman", Times, serif`;}
-function wrapText(text,x,y,maxWidth,lineHeight,size=FONT_SIZE,bold=false){setFont(size,bold);const words=String(text).split(/\s+/);let line="";for(const word of words){const test=line?line+" "+word:word;if(ctx.measureText(test).width>maxWidth&&line){ctx.fillText(line,x,y);y+=lineHeight;line=word;}else line=test;}if(line){ctx.fillText(line,x,y);y+=lineHeight;}return y;}
+function drawJustifiedLine(line, x, y, maxWidth) {
+  const words = line.trim().split(/\s+/);
+
+  if (words.length <= 1) {
+    ctx.fillText(line, x, y);
+    return;
+  }
+
+  const wordsWidth = words.reduce((sum, word) => {
+    return sum + ctx.measureText(word).width;
+  }, 0);
+
+  const spaceWidth = (maxWidth - wordsWidth) / (words.length - 1);
+
+  let currentX = x;
+
+  for (const word of words) {
+    ctx.fillText(word, currentX, y);
+    currentX += ctx.measureText(word).width + spaceWidth;
+  }
+}
+
+function wrapText(text, x, y, maxWidth, lineHeight, size = FONT_SIZE, bold = false) {
+  setFont(size, bold);
+
+  const words = String(text).split(/\s+/);
+  let line = "";
+
+  for (const word of words) {
+    const test = line ? line + " " + word : word;
+
+    if (ctx.measureText(test).width > maxWidth && line) {
+      drawJustifiedLine(line, x, y, maxWidth);
+      y += lineHeight;
+      line = word;
+    } else {
+      line = test;
+    }
+  }
+
+  // Последнюю строку НЕ растягиваем, как в Word
+  if (line) {
+    ctx.fillText(line, x, y);
+    y += lineHeight;
+  }
+
+  return y;
+}
 function wrapLines(text,maxWidth,size=FONT_SIZE,bold=false){setFont(size,bold);const words=String(text).split(/\s+/),lines=[];let line="";for(const word of words){const test=line?line+" "+word:word;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=word;}else line=test;}if(line)lines.push(line);return lines;}
 
 function addScanEffect(){
