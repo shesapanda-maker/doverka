@@ -1,96 +1,95 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Генератор доверенности</title>
-  <style>
-    :root{--bg:#f3f4f6;--card:#fff;--text:#111827;--muted:#6b7280;--border:#d1d5db;--button:#111827}
-    *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
-    .page{max-width:1240px;margin:0 auto;padding:24px}
-    header{margin-bottom:18px}
-    h1{margin:0 0 6px;font-size:26px}
-    header p{margin:0;color:var(--muted)}
-    .layout{display:grid;grid-template-columns:410px 1fr;gap:20px;align-items:start}
-    .panel{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;box-shadow:0 8px 24px rgba(0,0,0,.06)}
-    h2{margin:0 0 12px;font-size:18px}
-    h3{margin:20px 0 8px;font-size:15px;border-top:1px solid #eee;padding-top:14px}
-    label{display:block;margin:12px 0 5px;font-size:13px;font-weight:700}
-    input,textarea{width:100%;border:1px solid var(--border);border-radius:9px;padding:9px 10px;font:inherit;background:#fff}
-    textarea{min-height:82px;resize:vertical}
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    button{width:100%;margin-top:14px;padding:13px 15px;border:0;border-radius:10px;background:var(--button);color:white;font-weight:800;font-size:15px;cursor:pointer}
-    button.secondary{background:#6b7280}
-    .preview-panel{text-align:center}
-    canvas{width:100%;max-width:760px;height:auto;background:white;box-shadow:0 10px 26px rgba(0,0,0,.16)}
-    .hint{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.4}
-    @media(max-width:920px){.page{padding:12px}.layout{grid-template-columns:1fr}canvas{max-width:100%}}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Генератор доверенности</title>
+<style>
+:root{--bg:#f3f4f6;--card:#fff;--text:#111827;--muted:#6b7280;--border:#d1d5db;--button:#111827}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+.page{max-width:1240px;margin:0 auto;padding:24px}
+header{margin-bottom:18px}
+h1{margin:0 0 6px;font-size:26px}
+header p{margin:0;color:var(--muted)}
+.layout{display:grid;grid-template-columns:410px 1fr;gap:20px;align-items:start}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;box-shadow:0 8px 24px rgba(0,0,0,.06)}
+h2{margin:0 0 12px;font-size:18px}
+h3{margin:20px 0 8px;font-size:15px;border-top:1px solid #eee;padding-top:14px}
+label{display:block;margin:12px 0 5px;font-size:13px;font-weight:700}
+input,textarea{width:100%;border:1px solid var(--border);border-radius:9px;padding:9px 10px;font:inherit;background:#fff}
+textarea{min-height:82px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{width:100%;margin-top:14px;padding:13px 15px;border:0;border-radius:10px;background:var(--button);color:white;font-weight:800;font-size:15px;cursor:pointer}
+button.secondary{background:#6b7280}
+.preview-panel{text-align:center}
+canvas{width:100%;max-width:760px;height:auto;background:white;box-shadow:0 10px 26px rgba(0,0,0,.16)}
+.hint{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.4}
+@media(max-width:920px){.page{padding:12px}.layout{grid-template-columns:1fr}canvas{max-width:100%}}
+</style>
 </head>
 <body>
 <div class="page">
-  <header>
-    <h1>Генератор доверенности</h1>
-    <p>A4, Times New Roman 12pt, ЧБ scan effect, подпись и печать внизу.</p>
-  </header>
-
-  <div class="layout">
-    <section class="panel">
-      <h2>Данные доверенности</h2>
-
-      <div class="row">
-        <div><label>Номер доверенности</label><input id="poaNumber" value="16"></div>
-        <div><label>Дата</label><input id="poaDate" value="31 июля 2023 года"></div>
-      </div>
-
-      <label>Город</label><input id="city" value="Новосибирск">
-
-      <h3>Получатель</h3>
-      <label>Наименование / ФИО</label><input id="recipientName" value="Индивидуальный предприниматель Нуриева Софья Назимовна">
-      <label>ИНН</label><input id="recipientInn" value="540602942801">
-      <label>Юридический адрес</label><textarea id="recipientAddress">630005, РОССИЯ, Новосибирск, Улица Ипподромская, д. 27, кв. 51</textarea>
-
-      <h3>Экспедитор</h3>
-      <label>Наименование</label><input id="forwarderName" value="АО «ДПД РУС»">
-      <label>ИНН</label><input id="forwarderInn" value="7713215523">
-
-      <h3>Отправитель</h3>
-      <label>Наименование</label><input id="senderName" value='ООО "КПФ МИЛОРАДА"'>
-      <label>ИНН</label><input id="senderInn" value="7715021474">
-      <label>Юридический адрес</label><textarea id="senderAddress">129085, Москва г, Годовикова ул, дом № 9, строение 16</textarea>
-      <label>Телефон</label><input id="senderPhone" value="+7 (495) 9569801">
-
-      <h3>Документы</h3>
-      <label>Счета</label><input id="invoiceNumbers" value="№ 2554 от 2.06.2023, № 3393 от 19.07.2023">
-      <label>Накладная №</label><input id="waybillNumber" value="RU085104562">
-      <label>Действительна до</label><input id="validUntil" value="30 августа 2023 года">
-
-      <h3>Материальные ценности</h3>
-      <label>Каждая строка: Наименование; Количество; Вес нетто</label>
-      <textarea id="items" style="min-height:135px;">LECIGEL (Лецигель); 1 коробка; 5 кг
+<header><h1>Генератор доверенности</h1><p>Макет ближе к оригиналу: компактный Times New Roman, динамическая таблица, подпись и печать съезжают вниз.</p></header>
+<div class="layout">
+<section class="panel">
+<h2>Данные доверенности</h2>
+<div class="row"><div><label>Номер доверенности</label><input id="poaNumber" value="16"></div><div><label>Дата</label><input id="poaDate" value="31 июля 2023 года"></div></div>
+<label>Город</label><input id="city" value="Новосибирск">
+<h3>Получатель</h3>
+<label>Наименование / ФИО</label><input id="recipientName" value="Индивидуальный предприниматель Нуриева Софья Назимовна">
+<label>ИНН</label><input id="recipientInn" value="540602942801">
+<label>Юридический адрес</label><textarea id="recipientAddress">630005, РОССИЯ, Новосибирск, Улица Ипподромская, д. 27, кв. 51</textarea>
+<h3>Экспедитор</h3>
+<label>Наименование</label><input id="forwarderName" value="АО «ДПД РУС»">
+<label>ИНН</label><input id="forwarderInn" value="7713215523">
+<h3>Отправитель</h3>
+<label>Наименование</label><input id="senderName" value='ООО "КПФ МИЛОРАДА"'>
+<label>ИНН</label><input id="senderInn" value="7715021474">
+<label>Юридический адрес</label><textarea id="senderAddress">129085, Москва г, Годовикова ул, дом № 9, строение 16</textarea>
+<label>Телефон</label><input id="senderPhone" value="+7 (495) 9569801">
+<h3>Документы</h3>
+<label>Счета</label><input id="invoiceNumbers" value="№ 2554 от 2.06.2023, № 3393 от 19.07.2023">
+<label>Накладная №</label><input id="waybillNumber" value="RU085104562">
+<label>Действительна до</label><input id="validUntil" value="30 августа 2023 года">
+<h3>Материальные ценности</h3>
+<label>Каждая строка: Наименование; Количество; Вес нетто</label>
+<textarea id="items" style="min-height:135px;">LECIGEL (Лецигель); 1 коробка; 5 кг
 Canadian Willowherb 5% clear (Виллоухерб); 1 канистра; 1 кг
 ZIBOXAN TRH (Ксантановая камедь Зибоксан ТРХ); 1 упаковка; 25 кг</textarea>
-
-      <label>Подпись / нижняя строка</label><input id="signatory" value="ИП Нуриева Софья Назимовна">
-
-      <button onclick="downloadPdf()">Скачать PDF</button>
-      <button class="secondary" onclick="renderPreview()">Обновить предпросмотр</button>
-
-      <div class="hint">Файлы <code>signature.png</code> и <code>stamp.png</code> должны лежать рядом с index.html.</div>
-    </section>
-
-    <section class="panel preview-panel">
-      <h2>Предпросмотр</h2>
-      <canvas id="canvas" width="1240" height="1754"></canvas>
-      <div class="hint">PDF создаётся локально в браузере. Данные никуда не отправляются.</div>
-    </section>
-  </div>
+<label>Подпись / нижняя строка</label><input id="signatory" value="ИП Нуриева Софья Назимовна">
+<button onclick="downloadPdf()">Скачать PDF</button>
+<button onclick="downloadJpeg()" class="secondary">Скачать JPEG</button>
+<button class="secondary" onclick="renderPreview()">Обновить предпросмотр</button>
+<div class="hint">Для тонкой настройки смотри блок <code>НАСТРОЙКИ МАКЕТА</code> в index.html.</div>
+</section>
+<section class="panel preview-panel">
+<h2>Предпросмотр</h2>
+<canvas id="canvas" width="1240" height="1754"></canvas>
+<div class="hint">Если таблица растёт, подпись и печать автоматически уходят ниже.</div>
+</section>
+</div>
 </div>
 
 <script>
 const canvas=document.getElementById("canvas"),ctx=canvas.getContext("2d");
-const W=canvas.width,H=canvas.height,FONT_SIZE=25,SMALL_FONT_SIZE=22,LINE_H=38,LEFT=115,RIGHT=W-115,TOP=145;
+const W=canvas.width,H=canvas.height;
+
+// ==== НАСТРОЙКИ МАКЕТА ====
+// A4 canvas 1240x1754. Сдвиги можно править тут.
+const FONT_SIZE=20;             // ближе к Times New Roman 12pt в оригинале
+const SMALL_FONT_SIZE=18;
+const LINE_H=24;                // плотный межстрочный интервал как в Word/PDF
+const LEFT=150;                 // левое поле
+const RIGHT=W-150;              // правое поле
+const TOP=150;                  // верхний отступ
+
+// Настройка подписи и печати
+const SIGNATURE_CONFIG={x:165,y:34,w:215,h:115,rotation:-4,alpha:.86};
+const STAMP_CONFIG={x:490,y:-18,w:245,h:245,rotation:-8,alpha:.88};
+
+// Чем больше число, тем ниже подпись/печать от таблицы
+const SIGNATURE_BLOCK_GAP=105;
 
 const signatureImg=new Image(); signatureImg.src="signature.png";
 const stampImg=new Image(); stampImg.src="stamp.png";
@@ -107,102 +106,122 @@ function wrapText(text,x,y,maxWidth,lineHeight,size=FONT_SIZE,bold=false){setFon
 function wrapLines(text,maxWidth,size=FONT_SIZE,bold=false){setFont(size,bold);const words=String(text).split(/\s+/),lines=[];let line="";for(const word of words){const test=line?line+" "+word:word;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=word;}else line=test;}if(line)lines.push(line);return lines;}
 
 function addScanEffect(){
-  const imageData=ctx.getImageData(0,0,W,H),data=imageData.data;
-  for(let i=0;i<data.length;i+=4){
-    const x=(i/4)%W,y=Math.floor((i/4)/W);
-    let gray=data[i]*.299+data[i+1]*.587+data[i+2]*.114;
-    const dx=(x-W/2)/W,dy=(y-H/2)/H,vignette=Math.sqrt(dx*dx+dy*dy)*26,grain=(Math.random()-.5)*20;
-    gray=gray-vignette+grain; gray=(gray-128)*1.08+128; gray=Math.max(0,Math.min(255,gray));
-    data[i]=gray;data[i+1]=gray;data[i+2]=gray;
-  }
-  ctx.putImageData(imageData,0,0);
-  ctx.save();
-  ctx.fillStyle="rgba(0,0,0,.45)";
-  for(let i=0;i<115;i++){const x=Math.random()*W,y=Math.random()*H,r=Math.random()<.94?Math.random()*.85:1.4+Math.random()*2;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();}
-  ctx.globalAlpha=.09;ctx.strokeStyle="#000";ctx.lineWidth=.55;
-  for(let i=0;i<80;i++){const x=Math.random()*W,y=Math.random()*H,len=18+Math.random()*80;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+len,y+Math.random()*6-3);ctx.stroke();}
-  ctx.restore();
+const imageData=ctx.getImageData(0,0,W,H),data=imageData.data;
+for(let i=0;i<data.length;i+=4){
+const x=(i/4)%W,y=Math.floor((i/4)/W);
+let gray=data[i]*.299+data[i+1]*.587+data[i+2]*.114;
+const dx=(x-W/2)/W,dy=(y-H/2)/H,vignette=Math.sqrt(dx*dx+dy*dy)*22,grain=(Math.random()-.5)*15;
+gray=gray-vignette+grain; gray=(gray-128)*1.06+128; gray=Math.max(0,Math.min(255,gray));
+data[i]=gray;data[i+1]=gray;data[i+2]=gray;
+}
+ctx.putImageData(imageData,0,0);
+ctx.save();
+ctx.fillStyle="rgba(0,0,0,.38)";
+for(let i=0;i<95;i++){const x=Math.random()*W,y=Math.random()*H,r=Math.random()<.94?Math.random()*.75:1.3+Math.random()*1.8;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();}
+ctx.globalAlpha=.07;ctx.strokeStyle="#000";ctx.lineWidth=.5;
+for(let i=0;i<65;i++){const x=Math.random()*W,y=Math.random()*H,len=18+Math.random()*80;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+len,y+Math.random()*5-2.5);ctx.stroke();}
+ctx.restore();
 }
 
 function drawTable(rows,x,y,width){
-  const colNum=80,colQty=155,colWeight=135,colName=width-colNum-colQty-colWeight;
-  let tableFont=FONT_SIZE,rowBase=70;if(rows.length>8){tableFont=22;rowBase=58;}if(rows.length>13){tableFont=19;rowBase=48;}
-  const headerH=58;
-  function cellText(text,cx,cy,cw,ch,size=tableFont,bold=false,align="left"){
-    const padding=12,maxWidth=cw-padding*2,lines=wrapLines(text,maxWidth,size,bold),lh=size+7;
-    let ty=cy+(ch-lines.length*lh)/2+size;setFont(size,bold);
-    for(const line of lines){let tx=cx+padding;if(align==="center")tx=cx+cw/2-ctx.measureText(line).width/2;ctx.fillText(line,tx,ty);ty+=lh;}
-  }
-  function border(cx,cy,cw,ch){ctx.strokeRect(cx,cy,cw,ch);}
-  ctx.save();ctx.strokeStyle="#111";ctx.lineWidth=1.15;ctx.fillStyle="#050505";ctx.textBaseline="alphabetic";
-  border(x,y,colNum,headerH);border(x+colNum,y,colName,headerH);border(x+colNum+colName,y,colQty,headerH);border(x+colNum+colName+colQty,y,colWeight,headerH);
-  cellText("Номер",x,y,colNum,headerH,SMALL_FONT_SIZE,false,"center");
-  cellText("Наименование материальных ценностей",x+colNum,y,colName,headerH,SMALL_FONT_SIZE,false,"center");
-  cellText("Количество",x+colNum+colName,y,colQty,headerH,SMALL_FONT_SIZE,false,"center");
-  cellText("Вес нетто",x+colNum+colName+colQty,y,colWeight,headerH,SMALL_FONT_SIZE,false,"center");
-  y+=headerH;
-  rows.forEach(row=>{
-    const nameLines=wrapLines(row.name,colName-24,tableFont,false),rowH=Math.max(rowBase,22+nameLines.length*(tableFont+7));
-    border(x,y,colNum,rowH);border(x+colNum,y,colName,rowH);border(x+colNum+colName,y,colQty,rowH);border(x+colNum+colName+colQty,y,colWeight,rowH);
-    cellText(row.number,x,y,colNum,rowH,tableFont,false,"center");
-    cellText(row.name,x+colNum,y,colName,rowH,tableFont,false,"left");
-    cellText(row.qty,x+colNum+colName,y,colQty,rowH,tableFont,false,"left");
-    cellText(row.weight,x+colNum+colName+colQty,y,colWeight,rowH,tableFont,false,"left");
-    y+=rowH;
-  });
-  ctx.restore();return y;
+const colNum=105,colQty=145,colWeight=140,colName=width-colNum-colQty-colWeight;
+let tableFont=FONT_SIZE,rowBase=43,headerH=43;
+if(rows.length>6){tableFont=18;rowBase=39;headerH=40;}
+if(rows.length>10){tableFont=16;rowBase=34;headerH=36;}
+function cellText(text,cx,cy,cw,ch,size=tableFont,bold=false,align="center"){
+const padding=9,maxWidth=cw-padding*2,lines=wrapLines(text,maxWidth,size,bold),lh=size+5;
+let ty=cy+(ch-lines.length*lh)/2+size;setFont(size,bold);
+for(const line of lines){let tx=cx+padding;if(align==="center")tx=cx+cw/2-ctx.measureText(line).width/2;ctx.fillText(line,tx,ty);ty+=lh;}
+}
+function border(cx,cy,cw,ch){ctx.strokeRect(cx,cy,cw,ch);}
+ctx.save();ctx.strokeStyle="#111";ctx.lineWidth=1.25;ctx.fillStyle="#050505";ctx.textBaseline="alphabetic";
+border(x,y,colNum,headerH);border(x+colNum,y,colName,headerH);border(x+colNum+colName,y,colQty,headerH);border(x+colNum+colName+colQty,y,colWeight,headerH);
+cellText("Номер",x,y,colNum,headerH,SMALL_FONT_SIZE,false,"center");
+cellText("Наименование материальных ценностей",x+colNum,y,colName,headerH,SMALL_FONT_SIZE,false,"center");
+cellText("Количество",x+colNum+colName,y,colQty,headerH,SMALL_FONT_SIZE,false,"center");
+cellText("Вес нетто",x+colNum+colName+colQty,y,colWeight,headerH,SMALL_FONT_SIZE,false,"center");
+y+=headerH;
+rows.forEach(row=>{
+const nameLines=wrapLines(row.name,colName-18,tableFont,false);
+const rowH=Math.max(rowBase,16+nameLines.length*(tableFont+5));
+border(x,y,colNum,rowH);border(x+colNum,y,colName,rowH);border(x+colNum+colName,y,colQty,rowH);border(x+colNum+colName+colQty,y,colWeight,rowH);
+cellText(row.number,x,y,colNum,rowH,tableFont,false,"left");
+cellText(row.name,x+colNum,y,colName,rowH,tableFont,false,"center");
+cellText(row.qty,x+colNum+colName,y,colQty,rowH,tableFont,false,"center");
+cellText(row.weight,x+colNum+colName+colQty,y,colWeight,rowH,tableFont,false,"center");
+y+=rowH;
+});
+ctx.restore();return y;
+}
+
+function drawRotatedImage(img,x,y,w,h,deg,alpha){
+if(!(img.complete&&img.naturalWidth))return;
+ctx.save();ctx.globalAlpha=alpha;ctx.translate(x+w/2,y+h/2);ctx.rotate(deg*Math.PI/180);ctx.drawImage(img,-w/2,-h/2,w,h);ctx.restore();
 }
 
 function drawSignatureAndStamp(y,d){
-  const baseY=Math.min(y,H-330);
-  setFont(FONT_SIZE,false);ctx.fillStyle="#050505";ctx.fillText(d.signatory,LEFT,baseY);
-  if(signatureImg.complete&&signatureImg.naturalWidth){ctx.save();ctx.globalAlpha=.86;ctx.drawImage(signatureImg,LEFT+135,baseY+35,230,135);ctx.restore();}
-  if(stampImg.complete&&stampImg.naturalWidth){ctx.save();ctx.globalAlpha=.88;ctx.drawImage(stampImg,LEFT+465,baseY-8,255,255);ctx.restore();}
+// ВАЖНО: baseY зависит от y после таблицы. Если таблица больше, подпись и печать уходят ниже.
+let baseY=y+SIGNATURE_BLOCK_GAP;
+// Не даём вылететь за A4. Если позиций слишком много — понадобится вторая страница.
+baseY=Math.min(baseY,H-270);
+setFont(FONT_SIZE,false);ctx.fillStyle="#050505";ctx.fillText(d.signatory,LEFT,baseY);
+drawRotatedImage(signatureImg,LEFT+SIGNATURE_CONFIG.x,baseY+SIGNATURE_CONFIG.y,SIGNATURE_CONFIG.w,SIGNATURE_CONFIG.h,SIGNATURE_CONFIG.rotation,SIGNATURE_CONFIG.alpha);
+drawRotatedImage(stampImg,LEFT+STAMP_CONFIG.x,baseY+STAMP_CONFIG.y,STAMP_CONFIG.w,STAMP_CONFIG.h,STAMP_CONFIG.rotation,STAMP_CONFIG.alpha);
 }
 
 function renderDocumentRaw(){
-  const d=getData();
-  ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,W,H);ctx.fillStyle="#f7f7f4";ctx.fillRect(0,0,W,H);
-  ctx.save();ctx.translate(W/2,H/2);ctx.rotate(-.004);ctx.translate(-W/2,-H/2);
-  ctx.fillStyle="#050505";ctx.strokeStyle="#050505";ctx.lineWidth=1.1;ctx.textBaseline="alphabetic";
-  let y=TOP;
-  setFont(FONT_SIZE,true);ctx.textAlign="center";ctx.fillText(`ДОВЕРЕННОСТЬ № ${d.poaNumber}`,W/2,y);
-  y+=70;setFont(FONT_SIZE,false);ctx.textAlign="left";ctx.fillText(`Город ${d.city}`,LEFT,y);ctx.textAlign="right";ctx.fillText(d.poaDate,RIGHT,y);
-  y+=85;ctx.textAlign="left";
-  const intro=`${d.recipientName}, ИНН: ${d.recipientInn}, юридический адрес: ${d.recipientAddress} (далее – «Получатель») настоящим доверяет ${d.forwarderName}, ИНН ${d.forwarderInn} (далее – «Экспедитор») совершать все необходимые действия, связанные с транспортно-экспедиционным обслуживанием грузов, предназначенных к перевозке от ${d.senderName}, ИНН ${d.senderInn}, юридический адрес: ${d.senderAddress}, тел.: ${d.senderPhone} (далее – «Отправитель»), в том числе:`;
-  y=wrapText(intro,LEFT,y,RIGHT-LEFT,LINE_H,FONT_SIZE,false);y+=25;
-  const paragraph2=`Доставить получателю адресованный ему груз и товарно-материальные ценности по счетам ${d.invoiceNumbers}, выписанным на Получателя. Осуществить приемку, сопровождение и транспортировку груза по накладной № ${d.waybillNumber}. Получить на руки от Отправителя и передавать Получателю сопроводительные документы на груз, оформить накладную на груз, сопроводительные, первичные и иные документы, получить от Отправителя необходимую информацию о грузе.`;
-  y=wrapText(paragraph2,LEFT,y,RIGHT-LEFT,LINE_H,FONT_SIZE,false);y+=30;
-  y=wrapText(`Настоящая доверенность действительна до ${d.validUntil} без права передоверия третьим лицам.`,LEFT,y,RIGHT-LEFT,LINE_H,FONT_SIZE,false);y+=55;
-  setFont(FONT_SIZE,true);ctx.fillText("Перечень материальных ценностей, подлежащих получению:",LEFT,y);y+=45;
-  y=drawTable(d.items,LEFT,y,RIGHT-LEFT);y+=90;
-  drawSignatureAndStamp(y,d);
-  ctx.restore();addScanEffect();
+const d=getData();
+ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,W,H);ctx.fillStyle="#f8f8f5";ctx.fillRect(0,0,W,H);
+ctx.save();ctx.translate(W/2,H/2);ctx.rotate(-.0032);ctx.translate(-W/2,-H/2);
+ctx.fillStyle="#050505";ctx.strokeStyle="#050505";ctx.lineWidth=1.05;ctx.textBaseline="alphabetic";
+let y=TOP;
+setFont(FONT_SIZE,true);ctx.textAlign="center";ctx.fillText(`ДОВЕРЕННОСТЬ № ${d.poaNumber}`,W/2,y);
+y+=60;
+setFont(FONT_SIZE,false);ctx.textAlign="left";ctx.fillText(`Город ${d.city}`,LEFT,y);ctx.textAlign="right";ctx.fillText(d.poaDate,RIGHT,y);
+y+=58;ctx.textAlign="left";
+const intro=`${d.recipientName}, ИНН: ${d.recipientInn}, юридический адрес: ${d.recipientAddress} (далее – «Получатель») настоящим доверяет ${d.forwarderName}, ИНН ${d.forwarderInn} (далее – «Экспедитор») совершать все необходимые действия, связанные с транспортно-экспедиционным обслуживанием грузов, предназначенных к перевозке от ${d.senderName}, ИНН ${d.senderInn}, юридический адрес: ${d.senderAddress}, тел.: ${d.senderPhone} (далее – «Отправитель»), в том числе:`;
+y=wrapText(intro,LEFT,y,RIGHT-LEFT,LINE_H,FONT_SIZE,false);
+y+=14;
+const paragraph2=`Доставить получателю адресованный ему груз и товарно-материальные ценности по счетам ${d.invoiceNumbers}, выписанным на Получателя. Осуществить приемку, сопровождение и транспортировку груза по накладной № ${d.waybillNumber}. Получить на руки от Отправителя и передавать Получателю сопроводительные документы на груз, оформить накладную на груз, сопроводительные, первичные и иные документы, получить от Отправителя необходимую информацию о грузе.`;
+y=wrapText(paragraph2,LEFT,y,RIGHT-LEFT,LINE_H,FONT_SIZE,false);
+y+=15;
+y=wrapText(`Настоящая доверенность действительна до ${d.validUntil} без права передоверия третьим лицам.`,LEFT,y,RIGHT-LEFT,LINE_H,FONT_SIZE,false);
+y+=42;
+setFont(FONT_SIZE,false);ctx.fillText("Перечень материальных ценностей, подлежащих получению:",LEFT,y);
+y+=72;
+y=drawTable(d.items,LEFT-10,y,RIGHT-LEFT+20);
+drawSignatureAndStamp(y,d);
+ctx.restore();addScanEffect();
 }
+
 function renderPreview(){renderDocumentRaw();}
 
 function dataURLToBinaryString(dataURL){return atob(dataURL.split(",")[1]);}
 function makePdfFromCanvas(canvas){
-  const jpegDataURL=canvas.toDataURL("image/jpeg",.84),imgBinary=dataURLToBinaryString(jpegDataURL),imgLength=imgBinary.length;
-  const pageW=595.28,pageH=841.89,objects=[];
-  objects.push("<< /Type /Catalog /Pages 2 0 R >>");
-  objects.push("<< /Type /Pages /Kids [3 0 R] /Count 1 >>");
-  objects.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageW} ${pageH}] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>`);
-  objects.push(`<< /Type /XObject /Subtype /Image /Width ${canvas.width} /Height ${canvas.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${imgLength} >>\nstream\n${imgBinary}\nendstream`);
-  const content=`q\n${pageW} 0 0 ${pageH} 0 0 cm\n/Im0 Do\nQ`;
-  objects.push(`<< /Length ${content.length} >>\nstream\n${content}\nendstream`);
-  let pdf="%PDF-1.4\n";const offsets=[0];
-  for(let i=0;i<objects.length;i++){offsets.push(pdf.length);pdf+=`${i+1} 0 obj\n${objects[i]}\nendobj\n`;}
-  const xrefPos=pdf.length;pdf+=`xref\n0 ${objects.length+1}\n`;pdf+="0000000000 65535 f \n";
-  for(let i=1;i<offsets.length;i++)pdf+=String(offsets[i]).padStart(10,"0")+" 00000 n \n";
-  pdf+=`trailer\n<< /Size ${objects.length+1} /Root 1 0 R >>\nstartxref\n${xrefPos}\n%%EOF`;
-  const bytes=new Uint8Array(pdf.length);for(let i=0;i<pdf.length;i++)bytes[i]=pdf.charCodeAt(i)&0xff;
-  return new Blob([bytes],{type:"application/pdf"});
+const jpegDataURL=canvas.toDataURL("image/jpeg",.86),imgBinary=dataURLToBinaryString(jpegDataURL),imgLength=imgBinary.length;
+const pageW=595.28,pageH=841.89,objects=[];
+objects.push("<< /Type /Catalog /Pages 2 0 R >>");
+objects.push("<< /Type /Pages /Kids [3 0 R] /Count 1 >>");
+objects.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageW} ${pageH}] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>`);
+objects.push(`<< /Type /XObject /Subtype /Image /Width ${canvas.width} /Height ${canvas.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${imgLength} >>\nstream\n${imgBinary}\nendstream`);
+const content=`q\n${pageW} 0 0 ${pageH} 0 0 cm\n/Im0 Do\nQ`;
+objects.push(`<< /Length ${content.length} >>\nstream\n${content}\nendstream`);
+let pdf="%PDF-1.4\n";const offsets=[0];
+for(let i=0;i<objects.length;i++){offsets.push(pdf.length);pdf+=`${i+1} 0 obj\n${objects[i]}\nendobj\n`;}
+const xrefPos=pdf.length;pdf+=`xref\n0 ${objects.length+1}\n`;pdf+="0000000000 65535 f \n";
+for(let i=1;i<offsets.length;i++)pdf+=String(offsets[i]).padStart(10,"0")+" 00000 n \n";
+pdf+=`trailer\n<< /Size ${objects.length+1} /Root 1 0 R >>\nstartxref\n${xrefPos}\n%%EOF`;
+const bytes=new Uint8Array(pdf.length);for(let i=0;i<pdf.length;i++)bytes[i]=pdf.charCodeAt(i)&0xff;
+return new Blob([bytes],{type:"application/pdf"});
 }
 function downloadPdf(){
-  renderDocumentRaw();const blob=makePdfFromCanvas(canvas),url=URL.createObjectURL(blob);
-  const a=document.createElement("a");a.href=url;a.download="doverennost_dpd_scan.pdf";document.body.appendChild(a);a.click();
-  setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},1000);
+renderDocumentRaw();const blob=makePdfFromCanvas(canvas),url=URL.createObjectURL(blob);
+const a=document.createElement("a");a.href=url;a.download="doverennost_dpd_scan.pdf";document.body.appendChild(a);a.click();
+setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},1000);
+}
+function downloadJpeg(){
+renderDocumentRaw();const url=canvas.toDataURL("image/jpeg",.92);
+const a=document.createElement("a");a.href=url;a.download="doverennost_dpd_scan.jpg";document.body.appendChild(a);a.click();a.remove();
 }
 document.querySelectorAll("input, textarea").forEach(el=>el.addEventListener("input",renderPreview));
 renderPreview();
